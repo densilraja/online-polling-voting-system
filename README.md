@@ -53,24 +53,28 @@ online-polling-voting-system/
 - Maven
 
 ### Backend Setup
-\`\`\`bash
-cd backend
-# Configure your DB credentials in application.properties
-mvn spring-boot:run
-\`\`\`
 
+```
+
+cd backend
+```
+# Configure your DB credentials in application.properties
+```
+mvn spring-boot:run
+```
 ### Frontend Setup
-\`\`\`bash
+```
 cd frontend
 npm install
 npm start
-\`\`\`
+```
 
 ### Database Setup
-\`\`\`sql
+```
+sql
 CREATE DATABASE polling_db;
 -- Then run the schema file in /backend/src/main/resources/schema.sql
-\`\`\`
+```
 
 ## 🔗 API Endpoints
 
