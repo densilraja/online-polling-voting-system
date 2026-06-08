@@ -23,6 +23,7 @@ with secure authentication and real-time results.
 - 🗄️ Relational database schema for data consistency
 
 ## 📁 Project Structure
+```
 
 online-polling-voting-system/
 ├── backend/                        # Spring Boot application
@@ -40,6 +41,8 @@ online-polling-voting-system/
 │   └── package.json
 ├── assets/                         # Screenshots
 └── README.md
+
+```
 
 ## ⚙️ Getting Started
 
