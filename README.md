@@ -24,19 +24,22 @@ with secure authentication and real-time results.
 
 ## 📁 Project Structure
 
-\`\`\`
 online-polling-voting-system/
-├── backend/                  # Spring Boot application
+├── backend/                        # Spring Boot application
 │   ├── src/
-│   │   └── main/java/...     # Controllers, Services, Repositories
+│   │   └── main/java/
+│   │       ├── controller/         # REST Controllers
+│   │       ├── service/            # Business Logic
+│   │       ├── repository/         # DB Repositories
+│   │       └── model/              # Entity Classes
 │   └── pom.xml
-├── frontend/                 # React application
+├── frontend/                       # React application
 │   ├── src/
-│   │   ├── components/
-│   │   └── pages/
+│   │   ├── components/             # Reusable UI components
+│   │   └── pages/                  # Route-level pages
 │   └── package.json
+├── assets/                         # Screenshots
 └── README.md
-\`\`\`
 
 ## ⚙️ Getting Started
 
@@ -79,18 +82,25 @@ CREATE DATABASE polling_db;
 
 ## 📸 Screenshots
 
+## Poll Dashboard
 <img width="1915" height="967" alt="Screenshot 2026-06-08 152714" src="https://github.com/user-attachments/assets/a1fde008-c558-4225-95d7-5e80ca519ca9" />
 
+## Users
 <img width="1918" height="971" alt="Screenshot 2026-06-08 152728" src="https://github.com/user-attachments/assets/d6d3465d-0f6f-4471-a1e3-2c882f0a6834" />
 
+## Candidates
 <img width="1918" height="972" alt="Screenshot 2026-06-08 152740" src="https://github.com/user-attachments/assets/b440a67f-44cb-4523-82e9-2e5a4bc45f44" />
 
+## Positions
 <img width="1918" height="972" alt="Screenshot 2026-06-08 152749" src="https://github.com/user-attachments/assets/01ea00fd-3b87-427d-ab1f-830b574f2697" />
 
+## Poll Settings
 <img width="1918" height="970" alt="Screenshot 2026-06-08 152801" src="https://github.com/user-attachments/assets/7cb5bc2e-158e-4f3c-bcb3-8726f8c6b5a8" />
 
+## Analytics
 <img width="1918" height="967" alt="Screenshot 2026-06-08 152812" src="https://github.com/user-attachments/assets/3669a87f-faa0-4f4d-bc04-96cc409b4dd5" />
 
+## User Page
 <img width="1918" height="971" alt="Screenshot 2026-06-08 152836" src="https://github.com/user-attachments/assets/c4dc2b5e-7fbc-4b4d-a0fe-284fca0c15b5" />
 
 
