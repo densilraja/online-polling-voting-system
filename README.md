@@ -47,7 +47,7 @@ online-polling-voting-system/
 ## ⚙️ Getting Started
 
 ### Prerequisites
-- Java 17+
+- Java 21
 - Node.js 18+
 - MySQL 8+
 - Maven
