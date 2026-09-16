@@ -19,46 +19,61 @@ import com.raja.Backend.service.CandidateService;
 public class CandidateServiceImpl
         implements CandidateService {
 
+    // Used to perform database operations on Candidate
     @Autowired
     private CandidateRepository candidateRepository;
 
+    // Used to find the Position selected for the candidate
     @Autowired
     private PositionRepository positionRepository;
 
-    // ✅ NEW: injected so we can delete votes before deleting a candidate
+    // Used to delete votes associated with a candidate
+    // before deleting the candidate itself
     @Autowired
     private VoteRepository voteRepository;
 
+
+    // -------------------- ADD CANDIDATE --------------------
+
     @Override
-    public String addCandidate(
-            CandidateRequest request
-    ) {
+    public String addCandidate(CandidateRequest request) {
 
-        Position position =
-                positionRepository.findById(
-                        request.getPositionId()
-                ).orElseThrow();
+        // Find the position using the position ID received
+        // from the frontend request
+        Position position = positionRepository.findById(
+                request.getPositionId()
+        ).orElseThrow();
 
+        // Create a new Candidate entity
         Candidate candidate = new Candidate();
 
+        // Set candidate details from the request
         candidate.setName(request.getName());
-
         candidate.setParty(request.getParty());
-
         candidate.setLogo(request.getLogo());
 
+        // Associate the candidate with the selected position
         candidate.setPosition(position);
 
+        // Save the candidate into the database
         candidateRepository.save(candidate);
 
         return "Candidate Added Successfully";
     }
 
+
+    // -------------------- GET ALL CANDIDATES --------------------
+
     @Override
     public List<CandidateResponse> getAllCandidates() {
 
+        // Retrieve all candidates from the database
         return candidateRepository.findAll()
+
+                // Convert the List<Candidate> into a stream
                 .stream()
+
+                // Convert each Candidate entity into CandidateResponse DTO
                 .map(candidate ->
                         new CandidateResponse(
                                 candidate.getId(),
@@ -66,21 +81,31 @@ public class CandidateServiceImpl
                                 candidate.getParty(),
                                 candidate.getLogo(),
                                 candidate.isActive(),
+
+                                // Get the position title from the
+                                // Candidate -> Position relationship
                                 candidate.getPosition()
                                         .getTitle()
                         )
                 )
+
+                // Convert the stream back into a List
                 .toList();
     }
 
+
+    // -------------------- DELETE CANDIDATE --------------------
+
     @Override
-    @Transactional  // ✅ both deletes happen in one transaction
+    @Transactional
     public String deleteCandidate(Long id) {
 
-        // ✅ FIX: delete all votes for this candidate first,
-        // otherwise MySQL raises a foreign key constraint violation.
+        // First delete all votes associated with this candidate.
+        // This prevents foreign key constraint violations
+        // when the candidate is deleted.
         voteRepository.deleteByCandidateId(id);
 
+        // Now delete the candidate itself
         candidateRepository.deleteById(id);
 
         return "Candidate Deleted Successfully";

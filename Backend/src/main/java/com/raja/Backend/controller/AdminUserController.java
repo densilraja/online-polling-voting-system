@@ -5,7 +5,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import com.raja.Backend.dto.CreateUserRequest;
 import com.raja.Backend.dto.UpdateUserRequest;
@@ -31,14 +30,7 @@ public class AdminUserController {
     public UserResponse createUser(
             @RequestBody CreateUserRequest request
     ) {
-        try {
-            return userService.createUser(request);
-        } catch (RuntimeException e) {
-            // Email already exists
-            throw new ResponseStatusException(
-                    HttpStatus.CONFLICT, e.getMessage()
-            );
-        }
+        return userService.createUser(request);
     }
 
     @PutMapping("/{id}")

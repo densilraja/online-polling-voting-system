@@ -15,40 +15,59 @@ import com.raja.Backend.service.PositionService;
 public class PositionServiceImpl
         implements PositionService {
 
+    // Repository used to perform database operations
+    // on the Position entity
     @Autowired
     private PositionRepository positionRepository;
 
-    @Override
-    public String addPosition(
-            PositionRequest request
-    ) {
 
+    // -------------------- ADD POSITION --------------------
+
+    @Override
+    public String addPosition(PositionRequest request) {
+
+        // Create a new Position entity
         Position position = new Position();
 
+        // Set position details from the request DTO
         position.setTitle(request.getTitle());
-
         position.setDescription(
                 request.getDescription()
         );
 
+        // Set the maximum number of votes allowed
         position.setMaxVotesAllowed(
                 request.getMaxVotesAllowed()
         );
 
+        // Set whether the position/election is active
         position.setActive(request.isActive());
 
-        position.setEndTime(request.getEndTime());
+        // Set the election end time
+        position.setEndTime(
+                request.getEndTime()
+        );
 
+        // Save the position into the database
         positionRepository.save(position);
 
         return "Position Added Successfully";
     }
 
+
+    // -------------------- GET ALL POSITIONS --------------------
+
     @Override
     public List<PositionResponse> getAllPositions() {
 
+        // Fetch all positions from the database
         return positionRepository.findAll()
+
+                // Convert List<Position> into a Stream
                 .stream()
+
+                // Convert each Position entity
+                // into a PositionResponse DTO
                 .map(position ->
                         new PositionResponse(
                                 position.getId(),
@@ -59,16 +78,25 @@ public class PositionServiceImpl
                                 position.getEndTime()
                         )
                 )
+
+                // Convert the Stream back into a List
                 .toList();
     }
+
+
+    // -------------------- DELETE POSITION --------------------
 
     @Override
     public String deletePosition(Long id) {
 
+        // Delete the position using its ID
         positionRepository.deleteById(id);
 
         return "Position Deleted Successfully";
     }
+
+
+    // -------------------- UPDATE POSITION --------------------
 
     @Override
     public String updatePosition(
@@ -76,10 +104,13 @@ public class PositionServiceImpl
             PositionRequest request
     ) {
 
-        Position position =
-                positionRepository.findById(id)
-                        .orElseThrow();
+        // Find the existing position using its ID
+        // If the position does not exist, an exception is thrown
+        Position position = positionRepository.findById(id)
+                .orElseThrow();
 
+        // Update the existing position with
+        // values received from the request
         position.setTitle(request.getTitle());
 
         position.setDescription(
@@ -90,10 +121,15 @@ public class PositionServiceImpl
                 request.getMaxVotesAllowed()
         );
 
-        position.setActive(request.isActive());
+        position.setActive(
+                request.isActive()
+        );
 
-        position.setEndTime(request.getEndTime());
+        position.setEndTime(
+                request.getEndTime()
+        );
 
+        // Save the updated position
         positionRepository.save(position);
 
         return "Position Updated Successfully";

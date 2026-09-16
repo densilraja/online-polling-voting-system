@@ -3,14 +3,17 @@ package com.raja.Backend.security;
 import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import io.jsonwebtoken.ExpiredJwtException;
+
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,6 +28,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Autowired
     private CustomUserDetailsService customUserDetailsService;
 
+
+    // This method runs once for every incoming HTTP request
+    // and checks whether the request contains a JWT
     @Override
     protected void doFilterInternal(
             HttpServletRequest request,
@@ -32,9 +38,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             FilterChain filterChain)
             throws ServletException, IOException {
 
+        // Get the JWT from the Authorization header
         final String authHeader =
                 request.getHeader("Authorization");
 
+
+        // If there is no JWT, continue the request normally
+        // Public endpoints can continue without authentication
         if (authHeader == null ||
                 !authHeader.startsWith("Bearer ")) {
 
@@ -42,34 +52,55 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
+
         try {
 
+            // Remove "Bearer " and keep only the actual JWT
             String jwt = authHeader.substring(7);
 
+
+            // Extract the user's email from the JWT subject
             String userEmail =
                     jwtService.extractUsername(jwt);
 
+
+            // Only authenticate if no authentication
+            // has already been set for this request
             if (userEmail != null &&
                     SecurityContextHolder
                             .getContext()
                             .getAuthentication() == null) {
 
+
+                // Load the user from the database using the email
                 UserDetails userDetails =
                         customUserDetailsService
                                 .loadUserByUsername(userEmail);
 
+
+                // Validate the JWT before trusting the user
                 if (jwtService.isTokenValid(jwt, userDetails)) {
 
+
+                    // Create an Authentication object containing
+                    // the user and their authorities/roles
                     UsernamePasswordAuthenticationToken authToken =
                             new UsernamePasswordAuthenticationToken(
                                     userDetails,
                                     null,
-                                    userDetails.getAuthorities());
+                                    userDetails.getAuthorities()
+                            );
 
+
+                    // Attach request details to the authentication object
                     authToken.setDetails(
                             new WebAuthenticationDetailsSource()
-                                    .buildDetails(request));
+                                    .buildDetails(request)
+                    );
 
+
+                    // Store the authenticated user in SecurityContext
+                    // Spring Security uses this information for authorization
                     SecurityContextHolder.getContext()
                             .setAuthentication(authToken);
                 }
@@ -77,16 +108,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         } catch (ExpiredJwtException e) {
 
-            // ✅ FIX: Don't block the request here.
-            // Old code returned 401 immediately — this blocked /auth/login
-            // even though it's permitAll(), because the filter runs BEFORE
-            // Spring Security's authorization checks.
-            // Just continue the chain — Spring Security will deny access
-            // to protected routes naturally (no auth set in context).
+            // If the JWT is expired, don't authenticate the request.
+            // Continue the filter chain so Spring Security can
+            // handle protected endpoints normally.
             filterChain.doFilter(request, response);
             return;
         }
 
+
+        // Continue to the next security filter/controller
         filterChain.doFilter(request, response);
     }
 }

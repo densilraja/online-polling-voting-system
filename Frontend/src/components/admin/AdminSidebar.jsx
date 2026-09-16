@@ -9,12 +9,35 @@ import {
   X,
 } from "lucide-react";
 
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useContext } from "react";
+
+import { AuthContext } from "../../context/AuthContext";
+
 
 const AdminSidebar = ({
   sidebarOpen,
   setSidebarOpen,
 }) => {
+
+  // Used to navigate to another page
+  const navigate = useNavigate();
+
+  // Get the logout function from AuthContext
+  const { logout } = useContext(AuthContext);
+
+
+  // Handles logout
+  const handleLogout = () => {
+
+    // Clear authentication data
+    logout();
+
+    // Redirect to login page
+    navigate("/login");
+  };
+
+
   return (
     <>
 
@@ -27,6 +50,7 @@ const AdminSidebar = ({
         ></div>
       )}
 
+
       {/* Sidebar */}
 
       <div
@@ -34,6 +58,7 @@ const AdminSidebar = ({
         ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
         lg:translate-x-0`}
       >
+
 
         {/* Close Button */}
 
@@ -44,6 +69,7 @@ const AdminSidebar = ({
           </button>
 
         </div>
+
 
         {/* Logo */}
 
@@ -59,6 +85,7 @@ const AdminSidebar = ({
 
         </div>
 
+
         {/* Navigation */}
 
         <nav className="flex flex-col gap-3">
@@ -71,6 +98,7 @@ const AdminSidebar = ({
             Dashboard
           </Link>
 
+
           <Link
             to="/admin/users"
             className="flex items-center gap-4 p-4 rounded-2xl hover:bg-slate-800 transition"
@@ -78,6 +106,7 @@ const AdminSidebar = ({
             <Users size={22} />
             Users
           </Link>
+
 
           <Link
             to="/admin/candidates"
@@ -87,6 +116,7 @@ const AdminSidebar = ({
             Candidates
           </Link>
 
+
           <Link
             to="/admin/positions"
             className="flex items-center gap-4 p-4 rounded-2xl hover:bg-slate-800 transition"
@@ -94,6 +124,7 @@ const AdminSidebar = ({
             <BadgeCheck size={22} />
             Positions
           </Link>
+
 
           <Link
             to="/admin/poll-settings"
@@ -103,6 +134,7 @@ const AdminSidebar = ({
             Poll Settings
           </Link>
 
+
           <Link
             to="/admin/analytics"
             className="flex items-center gap-4 p-4 rounded-2xl hover:bg-slate-800 transition"
@@ -111,7 +143,13 @@ const AdminSidebar = ({
             Analytics
           </Link>
 
-          <button className="flex items-center gap-4 p-4 rounded-2xl hover:bg-red-500/20 text-red-400 mt-10 transition">
+
+          {/* Logout Button */}
+
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-4 p-4 rounded-2xl hover:bg-red-500/20 text-red-400 mt-10 transition"
+          >
             <LogOut size={22} />
             Logout
           </button>
@@ -123,5 +161,6 @@ const AdminSidebar = ({
     </>
   );
 };
+
 
 export default AdminSidebar;

@@ -16,49 +16,77 @@ import io.jsonwebtoken.security.Keys;
 @Service
 public class JwtService {
 
+    // Secret key used to digitally sign and validate JWT tokens
     private static final String SECRET_KEY =
             "VGhpc0lzQVNlY3JldEtleUZvckpXVFRva2VuR2VuZXJhdGlvbg==";
+
 
     // Generate JWT Token
     public String generateToken(String email) {
 
         return Jwts.builder()
+
+                // Store the user's email as the subject of the token
                 .setSubject(email)
+
+                // Store when the token was created
                 .setIssuedAt(new Date())
+
+                // Token will expire after 7 days
                 .setExpiration(
                         new Date(
                                 System.currentTimeMillis()
-                                        + 1000L * 60 * 60 * 24 * 7 // 7 Days
+                                        + 1000L * 60 * 60 * 24 * 7
                         )
                 )
-                .signWith(getSignKey(), SignatureAlgorithm.HS256)
+
+                // Sign the token using the secret key and HS256 algorithm
+                .signWith(
+                        getSignKey(),
+                        SignatureAlgorithm.HS256
+                )
+
+                // Convert the JWT builder into the final String token
                 .compact();
     }
 
-    // Extract Username
+
+    // Extract the username/email from the JWT
     public String extractUsername(String token) {
 
-        return extractClaim(token, Claims::getSubject);
+        return extractClaim(
+                token,
+                Claims::getSubject
+        );
     }
 
-    // Extract Expiration Date
+
+    // Extract the expiration date from the JWT
     public Date extractExpiration(String token) {
 
-        return extractClaim(token, Claims::getExpiration);
+        return extractClaim(
+                token,
+                Claims::getExpiration
+        );
     }
 
-    // Generic Claim Extractor
+
+    // Generic method used to extract any claim from the token
     public <T> T extractClaim(
             String token,
             Function<Claims, T> claimsResolver
     ) {
 
+        // Extract all claims from the JWT
         final Claims claims = extractAllClaims(token);
 
+        // Get the required claim from those claims
         return claimsResolver.apply(claims);
     }
 
-    // Validate Token
+
+    // Check whether the token belongs to the authenticated user
+    // and whether the token has expired
     public boolean isTokenValid(
             String token,
             UserDetails userDetails
@@ -70,23 +98,35 @@ public class JwtService {
                 && !isTokenExpired(token);
     }
 
-    // Check Expiry
+
+    // Check whether the JWT expiration time has passed
     public boolean isTokenExpired(String token) {
 
-        return extractExpiration(token).before(new Date());
+        return extractExpiration(token)
+                .before(new Date());
     }
 
-    // Extract All Claims
+
+    // Extract all claims after validating the JWT signature
     private Claims extractAllClaims(String token) {
 
         return Jwts.parserBuilder()
+
+                // Use the same secret key that was used to sign the token
                 .setSigningKey(getSignKey())
+
+                // Create the JWT parser
                 .build()
+
+                // Parse and validate the signed JWT
                 .parseClaimsJws(token)
+
+                // Get the payload/claims from the JWT
                 .getBody();
     }
 
-    // Secret Key
+
+    // Convert the Base64 secret into a cryptographic signing key
     private Key getSignKey() {
 
         byte[] keyBytes =

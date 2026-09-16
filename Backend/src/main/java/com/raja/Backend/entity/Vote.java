@@ -26,8 +26,7 @@ public class Vote {
 
     private LocalDateTime votedAt;
 
-    public Vote() {
-    }
+    public Vote() {}
 
     public Vote(
             User user,
